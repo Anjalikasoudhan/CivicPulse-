@@ -1,56 +1,35 @@
-import { useEffect, useState } from "react";
-import api from "./services/api";
-import "./index.css";
+
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "./context/AuthContext";
+
+import Register from "./pages/Register";
+import Dashboard from "./pages/DashBoard";
+import Login from "./pages/Login";
 
 function App() {
-    const [message, setMessage] = useState("Connecting...");
-    const [error, setError] = useState("");
+  const { user } = useAuth();
 
-    useEffect(() => {
-        const checkBackend = async () => {
-            try {
-                const response = await api.get("/health");
+  return (
+    <Routes>
+      <Route
+        path="/"
+        element={<Navigate to={user ? "/dashboard" : "/register"} />}
+      />
 
-                setMessage(response.data.message);
-            } catch (err) {
-                setError("Backend connection failed!");
-                console.error(err);
-            }
-        };
+      <Route path="/register" element={<Register />} />
 
-        checkBackend();
-    }, []);
+      <Route path="/login" element={<Login />} />
 
-    return (
-        <div className="app">
-            <nav className="navbar">
-                <h2>Civic<span>Pulse</span></h2>
-                <p>Making communities better.</p>
-            </nav>
+      <Route
+        path="/dashboard"
+        element={
+          user ? <Dashboard /> : <Navigate to="/login" />
+        }
+      />
 
-            <main className="hero">
-                <div className="status">COMMUNITY FIRST. CHANGE TOGETHER.</div>
-
-                <h1>
-                    Report issues.
-                    <br />
-                    <span>Create change.</span>
-                </h1>
-
-                <p>
-                    A smarter way to report civic problems,
-                    track progress and build better communities.
-                </p>
-
-                <div className="connection">
-                    <div className="dot"></div>
-                    {error || message}
-                </div>
-
-                <button>Explore CivicPulse</button>
-            </main>
-        </div>
-    );
+      <Route path="*" element={<Navigate to="/" />} />
+    </Routes>
+  );
 }
 
 export default App;
