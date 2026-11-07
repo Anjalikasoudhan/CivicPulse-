@@ -22,6 +22,17 @@ function DashBoard() {
       <button onClick={handleLogout}>
         Logout
       </button>
+      <button onClick={() => navigate("/report-issue")}>
+              Report an Issue
+       </button>
+
+       <button onClick={() => navigate("/all-complaints")}>
+         All Complaints
+       </button>
+
+       <button onClick={() => navigate("/my-complaints")}>
+         My Complaints
+       </button>
     </div>
   );
 }

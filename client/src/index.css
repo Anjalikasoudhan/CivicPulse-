@@ -177,3 +177,38 @@ button:hover {
 .error-message {
   color: #d32f2f !important;
 }
+
+.report-card {
+  max-width: 550px;
+}
+
+.report-card textarea,
+.report-card select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 7px;
+  font-size: 15px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.report-card input:focus,
+.report-card textarea:focus,
+.report-card select:focus {
+  outline: none;
+  border-color: #176b45;
+}
+
+.success-message {
+  color: #16803c !important;
+  background: #e9f8ee;
+  padding: 10px;
+  border-radius: 6px;
+}
+
+.back-button {
+  width: 100%;
+  background: #e8eee9 !important;
+  color: #173d2b !important;
+}
