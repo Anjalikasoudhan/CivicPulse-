@@ -224,7 +224,7 @@ Admin access is assigned through the backend rather than public registration.
 ![Login Page](./screenshots/login.png)
 ## Project Objective
 
-
+Deploy Link - https://civic-pulse-one-opal.vercel.app/
 The objective of CivicPulse is to provide a simple and accessible platform where citizens can raise local issues and track their resolution.
 
 **CivicPulse – Making communities better, one report at a time.**
