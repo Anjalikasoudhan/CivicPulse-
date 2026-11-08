@@ -78,3 +78,48 @@ export const getMyComplaints = async (req, res) => {
     });
   }
 };
+
+export const updateComplaintStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+
+    const allowedStatuses = [
+      "Pending",
+      "In Progress",
+      "Resolved",
+      "Rejected"
+    ];
+
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid complaint status"
+      });
+    }
+
+    const complaint = await Complaint.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true, runValidators: true }
+    );
+
+    if (!complaint) {
+      return res.status(404).json({
+        success: false,
+        message: "Complaint not found"
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Complaint status updated successfully",
+      complaint
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};

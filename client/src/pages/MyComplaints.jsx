@@ -1,8 +1,12 @@
 
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { MapPin, CalendarDays, ClipboardList, ArrowLeft, PlusCircle } from "lucide-react";
 import api from "../services/api";
 
 function MyComplaints() {
+  const navigate = useNavigate();
+
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -25,35 +29,138 @@ function MyComplaints() {
     fetchMyComplaints();
   }, []);
 
-  if (loading) return <h2>Loading your complaints...</h2>;
-  if (error) return <p>{error}</p>;
+  const getStatusClass = (status) => {
+    switch (status) {
+      case "Pending":
+        return "status-pending";
+      case "In Progress":
+        return "status-progress";
+      case "Resolved":
+        return "status-resolved";
+      case "Rejected":
+        return "status-rejected";
+      default:
+        return "";
+    }
+  };
 
   return (
-    <div style={{ padding: "30px" }}>
-      <h1>My Complaints</h1>
-      <p>Track the civic issues you have reported.</p>
+    <div className="complaints-page">
 
-      {complaints.length === 0 ? (
-        <p>You haven't reported any complaints yet.</p>
-      ) : (
-        complaints.map((complaint) => (
-          <div
-            key={complaint._id}
-            style={{
-              border: "1px solid #ddd",
-              padding: "20px",
-              marginBottom: "15px",
-              borderRadius: "8px"
-            }}
-          >
-            <h3>{complaint.title}</h3>
-            <p>{complaint.description}</p>
-            <p>Category: {complaint.category}</p>
-            <p>Location: {complaint.location}</p>
-            <p>Status: {complaint.status}</p>
+      <nav className="citizen-navbar">
+        <div>
+          <h2>Civic<span>Pulse</span></h2>
+          <p>Community first. Change together.</p>
+        </div>
+
+        <button
+          className="view-all-btn"
+          onClick={() => navigate("/dashboard")}
+        >
+          <ArrowLeft size={17} />
+          Dashboard
+        </button>
+      </nav>
+
+      <main className="page-container">
+
+        <section className="complaints-heading">
+          <div>
+            <span className="welcome-label">YOUR ACTIVITY</span>
+            <h1 className="page-heading">My Complaints</h1>
+            <p className="page-description">
+              Track the civic issues you have reported and
+              monitor their progress.
+            </p>
           </div>
-        ))
-      )}
+
+          <button
+            className="primary-btn"
+            onClick={() => navigate("/report-issue")}
+          >
+            <PlusCircle size={18} />
+            Report New Issue
+          </button>
+        </section>
+
+        {loading ? (
+          <div className="empty-state">
+            Loading your complaints...
+          </div>
+        ) : error ? (
+          <p className="error-message">{error}</p>
+        ) : complaints.length === 0 ? (
+          <div className="empty-state complaints-empty">
+            <ClipboardList size={42} />
+            <h3>No complaints yet</h3>
+            <p>
+              You haven't reported any civic issues.
+              Start by reporting a problem in your area.
+            </p>
+
+            <button
+              className="primary-btn"
+              onClick={() => navigate("/report-issue")}
+            >
+              Report an Issue
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="complaints-count">
+              Showing {complaints.length} reported complaints
+            </div>
+
+            <div className="my-complaints-grid">
+              {complaints.map((complaint) => (
+                <article
+                  className="my-complaint-card"
+                  key={complaint._id}
+                >
+                  <div className="my-complaint-top">
+                    <span className="category-label">
+                      {complaint.category}
+                    </span>
+
+                    <span className={`status-badge ${getStatusClass(complaint.status)}`}>
+                      {complaint.status}
+                    </span>
+                  </div>
+
+                  <h3>{complaint.title}</h3>
+
+                  <p className="my-complaint-description">
+                    {complaint.description}
+                  </p>
+
+                  <div className="my-complaint-info">
+                    <div>
+                      <MapPin size={16} />
+                      <span>{complaint.location}</span>
+                    </div>
+
+                    <div>
+                      <CalendarDays size={16} />
+                      <span>
+                        Reported on{" "}
+                        {new Date(complaint.createdAt).toLocaleDateString(
+                          "en-IN",
+                          {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric"
+                          }
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </>
+        )}
+
+      </main>
     </div>
   );
 }
