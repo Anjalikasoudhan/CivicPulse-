@@ -1,7 +1,13 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { MapPin, CalendarDays, ClipboardList, ArrowLeft, PlusCircle } from "lucide-react";
+import {
+  MapPin,
+  CalendarDays,
+  ClipboardList,
+  ArrowLeft,
+  PlusCircle
+} from "lucide-react";
 import api from "../services/api";
 
 function MyComplaints() {
@@ -49,7 +55,9 @@ function MyComplaints() {
 
       <nav className="citizen-navbar">
         <div>
-          <h2>Civic<span>Pulse</span></h2>
+          <h2>
+            Civic<span>Pulse</span>
+          </h2>
           <p>Community first. Change together.</p>
         </div>
 
@@ -122,7 +130,11 @@ function MyComplaints() {
                       {complaint.category}
                     </span>
 
-                    <span className={`status-badge ${getStatusClass(complaint.status)}`}>
+                    <span
+                      className={`status-badge ${getStatusClass(
+                        complaint.status
+                      )}`}
+                    >
                       {complaint.status}
                     </span>
                   </div>
@@ -143,17 +155,68 @@ function MyComplaints() {
                       <CalendarDays size={16} />
                       <span>
                         Reported on{" "}
-                        {new Date(complaint.createdAt).toLocaleDateString(
-                          "en-IN",
-                          {
-                            day: "numeric",
-                            month: "short",
-                            year: "numeric"
-                          }
-                        )}
+                        {new Date(
+                          complaint.createdAt
+                        ).toLocaleDateString("en-IN", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric"
+                        })}
                       </span>
                     </div>
                   </div>
+
+                  {/* AI Complaint Analysis */}
+                  {complaint.aiStatus === "Completed" &&
+                    complaint.aiAnalysis && (
+                      <div className="ai-analysis-card">
+
+                        <div className="ai-analysis-heading">
+                          <h4>✨ AI Complaint Analysis</h4>
+                          <span>AI Analyzed</span>
+                        </div>
+
+                        <div className="ai-analysis-details">
+                          <div>
+                            <strong>Suggested Category</strong>
+                            <p>
+                              {complaint.aiAnalysis.suggestedCategory}
+                            </p>
+                          </div>
+
+                          <div>
+                            <strong>Priority</strong>
+                            <p
+                              className={`priority-${complaint.aiAnalysis.priority?.toLowerCase()}`}
+                            >
+                              {complaint.aiAnalysis.priority}
+                            </p>
+                          </div>
+
+                          <div>
+                            <strong>Assigned Department</strong>
+                            <p>
+                              {complaint.aiAnalysis.department}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="ai-summary">
+                          <strong>AI Summary</strong>
+                          <p>
+                            {complaint.aiAnalysis.summary}
+                          </p>
+                        </div>
+
+                      </div>
+                    )}
+
+                  {complaint.aiStatus === "Failed" && (
+                    <p className="ai-unavailable">
+                      AI analysis is currently unavailable.
+                    </p>
+                  )}
+
                 </article>
               ))}
             </div>

@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -12,6 +12,9 @@ import api from "../services/api";
 
 function ReportIssue() {
   const navigate = useNavigate();
+
+  // Prevent multiple submissions
+  const submittingRef = useRef(false);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -29,12 +32,17 @@ function ReportIssue() {
       ...formData,
       [e.target.name]: e.target.value
     });
+
     setError("");
     setSuccess("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Stop duplicate submissions immediately
+    if (submittingRef.current) return;
+
     setError("");
     setSuccess("");
 
@@ -48,6 +56,7 @@ function ReportIssue() {
       return;
     }
 
+    submittingRef.current = true;
     setLoading(true);
 
     try {
@@ -76,6 +85,7 @@ function ReportIssue() {
         "Unable to submit complaint. Please try again."
       );
     } finally {
+      submittingRef.current = false;
       setLoading(false);
     }
   };
@@ -85,7 +95,9 @@ function ReportIssue() {
 
       <nav className="citizen-navbar">
         <div>
-          <h2>Civic<span>Pulse</span></h2>
+          <h2>
+            Civic<span>Pulse</span>
+          </h2>
           <p>Community first. Change together.</p>
         </div>
 
@@ -115,6 +127,7 @@ function ReportIssue() {
             <div className="report-heading-icon">
               <FileText size={23} />
             </div>
+
             <div>
               <h2>Complaint Details</h2>
               <p>Provide accurate information about the issue.</p>
@@ -138,6 +151,7 @@ function ReportIssue() {
 
             <div className="form-group">
               <label htmlFor="title">Complaint Title *</label>
+
               <input
                 id="title"
                 type="text"
@@ -148,6 +162,7 @@ function ReportIssue() {
                 maxLength={100}
                 required
               />
+
               <span className="character-count">
                 {formData.title.length}/100 characters
               </span>
@@ -155,6 +170,7 @@ function ReportIssue() {
 
             <div className="form-group">
               <label htmlFor="description">Description *</label>
+
               <textarea
                 id="description"
                 name="description"
@@ -165,6 +181,7 @@ function ReportIssue() {
                 rows={5}
                 required
               />
+
               <span className="character-count">
                 {formData.description.length}/1000 characters
               </span>
@@ -172,6 +189,7 @@ function ReportIssue() {
 
             <div className="form-group">
               <label htmlFor="category">Issue Category *</label>
+
               <select
                 id="category"
                 name="category"
@@ -194,6 +212,7 @@ function ReportIssue() {
 
               <div className="location-input">
                 <MapPin size={18} />
+
                 <input
                   id="location"
                   type="text"
@@ -220,6 +239,7 @@ function ReportIssue() {
                 type="button"
                 className="cancel-form-btn"
                 onClick={() => navigate("/dashboard")}
+                disabled={loading}
               >
                 Cancel
               </button>

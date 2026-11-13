@@ -12,7 +12,7 @@ const PORT=process.env.PORT||5000;
 const startServer=async()=>{
     await connection();
     
-    app.listen(PORT,()=>{
+    app.listen(PORT,"0.0.0.0",()=>{
         console.log(`server running on port ${PORT}`);
     });
 };

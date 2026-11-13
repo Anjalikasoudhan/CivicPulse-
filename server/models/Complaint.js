@@ -1,3 +1,4 @@
+
 import mongoose from "mongoose";
 
 const complaintSchema = new mongoose.Schema(
@@ -45,6 +46,39 @@ const complaintSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true
+    },
+
+    aiAnalysis: {
+      suggestedCategory: {
+        type: String,
+        enum: [
+          "Roads",
+          "Garbage",
+          "Water",
+          "Electricity",
+          "Drainage",
+          "Other"
+        ]
+      },
+
+      priority: {
+        type: String,
+        enum: ["Low", "Medium", "High", "Critical"]
+      },
+
+      department: {
+        type: String
+      },
+
+      summary: {
+        type: String
+      }
+    },
+
+    aiStatus: {
+      type: String,
+      enum: ["Pending", "Completed", "Failed"],
+      default: "Pending"
     }
   },
   { timestamps: true }
