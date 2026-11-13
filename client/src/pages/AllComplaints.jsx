@@ -97,8 +97,14 @@ function AllComplaints() {
 
         <section className="all-complaints-heading">
           <div>
-            <span className="welcome-label">COMMUNITY ACTIVITY</span>
-            <h1 className="page-heading">Community Complaints</h1>
+            <span className="welcome-label">
+              COMMUNITY ACTIVITY
+            </span>
+
+            <h1 className="page-heading">
+              Community Complaints
+            </h1>
+
             <p className="page-description">
               Explore civic issues reported by people in your community
               and follow their resolution progress.
@@ -107,8 +113,10 @@ function AllComplaints() {
         </section>
 
         <section className="complaint-filters">
+
           <div className="search-box">
             <Search size={19} />
+
             <input
               type="text"
               placeholder="Search by title, location or reporter..."
@@ -140,6 +148,7 @@ function AllComplaints() {
             <option value="Resolved">Resolved</option>
             <option value="Rejected">Rejected</option>
           </select>
+
         </section>
 
         {loading ? (
@@ -157,10 +166,13 @@ function AllComplaints() {
             {filteredComplaints.length === 0 ? (
               <div className="empty-state complaints-empty">
                 <ClipboardList size={42} />
+
                 <h3>No complaints found</h3>
+
                 <p>
                   Try changing your search or filters.
                 </p>
+
                 <button
                   className="primary-btn"
                   onClick={() => {
@@ -174,19 +186,25 @@ function AllComplaints() {
               </div>
             ) : (
               <div className="my-complaints-grid">
+
                 {filteredComplaints.map((complaint) => (
                   <article
                     className="my-complaint-card"
                     key={complaint._id}
                   >
+
                     <div className="my-complaint-top">
+
                       <span className="category-label">
                         {complaint.category}
                       </span>
 
-                      <span className={`status-badge ${getStatusClass(complaint.status)}`}>
+                      <span
+                        className={`status-badge ${getStatusClass(complaint.status)}`}
+                      >
                         {complaint.status}
                       </span>
+
                     </div>
 
                     <h3>{complaint.title}</h3>
@@ -196,6 +214,7 @@ function AllComplaints() {
                     </p>
 
                     <div className="my-complaint-info">
+
                       <div>
                         <MapPin size={16} />
                         <span>{complaint.location}</span>
@@ -221,9 +240,71 @@ function AllComplaints() {
                           )}
                         </span>
                       </div>
+
                     </div>
+
+                    {/* AI Analysis Section */}
+
+                    {complaint.aiStatus === "Completed" &&
+                      complaint.aiAnalysis && (
+                        <div className="ai-analysis-card">
+
+                          <div className="ai-analysis-heading">
+                            <h4>AI Analysis</h4>
+                            <span>Analysis Completed</span>
+                          </div>
+
+                          <div className="ai-analysis-details">
+
+                            <div>
+                              <strong>Suggested Category</strong>
+                              <p>
+                                {complaint.aiAnalysis.suggestedCategory}
+                              </p>
+                            </div>
+
+                            <div>
+                              <strong>Priority</strong>
+                              <p
+                                className={`priority-${complaint.aiAnalysis.priority?.toLowerCase()}`}
+                              >
+                                {complaint.aiAnalysis.priority}
+                              </p>
+                            </div>
+
+                            <div>
+                              <strong>Suggested Department</strong>
+                              <p>
+                                {complaint.aiAnalysis.department}
+                              </p>
+                            </div>
+
+                            <div>
+                              <strong>AI Summary</strong>
+                              <p>
+                                {complaint.aiAnalysis.summary}
+                              </p>
+                            </div>
+
+                          </div>
+                        </div>
+                      )}
+
+                    {complaint.aiStatus === "Failed" && (
+                      <p className="ai-unavailable">
+                        AI analysis is currently unavailable.
+                      </p>
+                    )}
+
+                    {!complaint.aiStatus && (
+                      <p className="ai-unavailable">
+                        AI analysis not available for this complaint.
+                      </p>
+                    )}
+
                   </article>
                 ))}
+
               </div>
             )}
           </>
