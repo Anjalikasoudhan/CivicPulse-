@@ -11,6 +11,7 @@ import AllComplaints from "./pages/AllComplaints";
 import MyComplaints from "./pages/MyComplaints";
 import AdminDashboard from "./pages/AdminDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ComplaintMap from "./pages/ComplaintMap";
 
 function App() {
   const { user } = useAuth();
@@ -54,7 +55,12 @@ function App() {
           user ? <AllComplaints /> : <Navigate to="/login" replace />
         }
       />
-
+      <Route
+        path="/complaint-map"
+        element={
+        user ? <ComplaintMap /> : <Navigate to="/login" replace />
+       }
+      />
       <Route
         path="/my-complaints"
         element={

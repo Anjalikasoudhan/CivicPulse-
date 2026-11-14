@@ -10,7 +10,8 @@ import {
   CheckCircle,
   Clock,
   ArrowRight,
-  MapPin
+  MapPin,
+  Map
 } from "lucide-react";
 import api from "../services/api";
 
@@ -91,6 +92,13 @@ function DashBoard() {
       label: "View reports",
       image: "https://images.unsplash.com/photo-1559027615-cd4628902d4a?auto=format&fit=crop&w=700&q=80",
       path: "/my-complaints"
+    },
+    {
+      title: "Community Map",
+      description: "Explore civic issues reported across your community.",
+      label: "View map",
+      image: "https://as2.ftcdn.net/v2/jpg/10/01/92/27/1000_F_1001922727_VqWMQoMO1QL1ldA2ZRWgWTgS5kkENChz.jpg",
+      path: "/complaint-map"
     }
   ];
 
@@ -100,13 +108,19 @@ function DashBoard() {
       {/* Navbar */}
       <nav className="citizen-navbar">
         <div>
-          <h2>Civic<span>Pulse</span></h2>
+          <h2>
+            Civic<span>Pulse</span>
+          </h2>
           <p>Community first. Change together.</p>
         </div>
 
         <div className="citizen-nav-right">
           <span>{user?.name}</span>
-          <button className="logout-btn" onClick={handleLogout}>
+
+          <button
+            className="logout-btn"
+            onClick={handleLogout}
+          >
             <LogOut size={17} />
             Logout
           </button>
@@ -126,7 +140,8 @@ function DashBoard() {
 
           <div className="dashboard-hero-content">
             <span className="dashboard-hero-label">
-              <MapPin size={15} /> CITIZEN DASHBOARD
+              <MapPin size={15} />
+              CITIZEN DASHBOARD
             </span>
 
             <h1>
@@ -164,7 +179,7 @@ function DashBoard() {
           ))}
         </section>
 
-        {/* Quick Actions with Images */}
+        {/* Quick Actions */}
         <section className="quick-actions">
           <div className="dashboard-section-title">
             <div>
@@ -179,9 +194,20 @@ function DashBoard() {
                 className="dashboard-image-action-card"
                 key={action.title}
                 onClick={() => navigate(action.path)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={e => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    navigate(action.path);
+                  }
+                }}
               >
                 <div className="dashboard-action-image">
-                  <img src={action.image} alt={action.title} />
+                  <img
+                    src={action.image}
+                    alt={action.title}
+                  />
                 </div>
 
                 <div className="dashboard-action-content">
@@ -210,7 +236,8 @@ function DashBoard() {
               className="view-all-btn"
               onClick={() => navigate("/my-complaints")}
             >
-              View All <ArrowRight size={16} />
+              View All
+              <ArrowRight size={16} />
             </button>
           </div>
 
@@ -221,6 +248,7 @@ function DashBoard() {
               <ClipboardList size={35} />
               <h3>No complaints yet</h3>
               <p>Start by reporting an issue in your community.</p>
+
               <button
                 className="dashboard-empty-btn"
                 onClick={() => navigate("/report-issue")}
@@ -231,7 +259,10 @@ function DashBoard() {
           ) : (
             <div className="recent-list">
               {recentComplaints.map(complaint => (
-                <div className="recent-item" key={complaint._id}>
+                <div
+                  className="recent-item"
+                  key={complaint._id}
+                >
                   <div>
                     <h3>{complaint.title}</h3>
                     <p>

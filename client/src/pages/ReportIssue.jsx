@@ -6,14 +6,51 @@ import {
   MapPin,
   FileText,
   Send,
-  CheckCircle
+  CheckCircle,
+  LocateFixed
 } from "lucide-react";
+
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  useMapEvents
+} from "react-leaflet";
+
+import L from "leaflet";
 import api from "../services/api";
+
+// Fix default Leaflet marker icons in Vite
+delete L.Icon.Default.prototype._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
+  iconUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
+  shadowUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png"
+});
+
+// Component to capture map clicks
+function LocationSelector({ position, setPosition }) {
+  useMapEvents({
+    click(e) {
+      setPosition([
+        e.latlng.lat,
+        e.latlng.lng
+      ]);
+    }
+  });
+
+  return position ? (
+    <Marker position={position} />
+  ) : null;
+}
 
 function ReportIssue() {
   const navigate = useNavigate();
 
-  // Prevent multiple submissions
   const submittingRef = useRef(false);
 
   const [formData, setFormData] = useState({
@@ -22,6 +59,8 @@ function ReportIssue() {
     category: "",
     location: ""
   });
+
+  const [position, setPosition] = useState(null);
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -40,7 +79,6 @@ function ReportIssue() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Stop duplicate submissions immediately
     if (submittingRef.current) return;
 
     setError("");
@@ -56,6 +94,11 @@ function ReportIssue() {
       return;
     }
 
+    if (!position) {
+      setError("Please select the issue location on the map.");
+      return;
+    }
+
     submittingRef.current = true;
     setLoading(true);
 
@@ -64,7 +107,9 @@ function ReportIssue() {
         ...formData,
         title: formData.title.trim(),
         description: formData.description.trim(),
-        location: formData.location.trim()
+        location: formData.location.trim(),
+        latitude: position[0],
+        longitude: position[1]
       });
 
       setSuccess(
@@ -78,6 +123,8 @@ function ReportIssue() {
         category: "",
         location: ""
       });
+
+      setPosition(null);
 
     } catch (err) {
       setError(
@@ -223,6 +270,53 @@ function ReportIssue() {
                   required
                 />
               </div>
+            </div>
+
+            {/* Interactive complaint location map */}
+            <div className="form-group">
+              <label>
+                <LocateFixed size={17} />
+                Select Exact Location on Map *
+              </label>
+
+              <p className="map-instruction">
+                Click on the map to mark where the civic issue exists.
+              </p>
+
+              <div
+                style={{
+                  height: "350px",
+                  width: "100%",
+                  borderRadius: "12px",
+                  overflow: "hidden",
+                  border: "1px solid #dce5de"
+                }}
+              >
+                <MapContainer
+                  center={[26.7606, 83.3732]}
+                  zoom={13}
+                  style={{ height: "100%", width: "100%" }}
+                  scrollWheelZoom={true}
+                >
+                  <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
+
+                  <LocationSelector
+                    position={position}
+                    setPosition={setPosition}
+                  />
+                </MapContainer>
+              </div>
+
+              {position && (
+                <p style={{ marginTop: "10px", fontSize: "13px" }}>
+                  <CheckCircle size={15} color="green" />
+                  Location selected: {position[0].toFixed(6)},
+                  {" "}{position[1].toFixed(6)}
+                </p>
+              )}
             </div>
 
             <div className="report-form-actions">
